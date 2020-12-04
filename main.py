@@ -38,8 +38,25 @@ def day2_1():
     return len(valid_passwords)
 
 
+def day2_2():
+    valid_passwords = []
+    with open("input_pw.txt", "r") as f:
+        for line in f:
+            parts = line.split()
+            positions = parts[0].split("-")
+            letter = parts[1][0]
+            password = parts[2]
+            position_1 = letter == password[int(positions[0])-1]
+            position_2 = letter == password[int(positions[1])-1]
+            if position_1 or position_2:
+                if not (position_1 and position_2):
+                    valid_passwords.append(line)
+    return len(valid_passwords)
+
+
 if __name__ == '__main__':
-    # print(day1_1())
-    # print(day1_2())
+    print(day1_1())
+    print(day1_2())
     print(day2_1())
+    print(day2_2())
 
