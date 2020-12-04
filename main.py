@@ -25,6 +25,21 @@ def get_two_with_sum(values: List[int], target_sum: int):
     return [x for x in values if target_sum - x in values]
 
 
+def day2_1():
+    valid_passwords = []
+    with open("input_pw.txt", "r") as f:
+        for line in f:
+            parts = line.split()
+            times = parts[0].split("-")
+            letter = parts[1][0]
+            password = parts[2]
+            if int(times[0]) <= password.count(letter) <= int(times[1]):
+                valid_passwords.append(line)
+    return len(valid_passwords)
+
+
 if __name__ == '__main__':
-    print(day1_1())
-    print(day1_2())
+    # print(day1_1())
+    # print(day1_2())
+    print(day2_1())
+
