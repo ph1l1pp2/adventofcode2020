@@ -53,10 +53,23 @@ def day2_2():
                     valid_passwords.append(line)
     return len(valid_passwords)
 
+def day3_1():
+    with open("input_3.txt", "r") as f:
+        grid = f.readlines()
+    x = 0
+    trees = 0
+    for y in grid:
+        index = x % (len(y)-1)
+        if y[index] == "#":
+            trees += 1
+        x += 3
+    return trees
+
 
 if __name__ == '__main__':
     print(day1_1())
     print(day1_2())
     print(day2_1())
     print(day2_2())
+    print(day3_1())
 
