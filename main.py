@@ -164,15 +164,15 @@ def is_passport_field_valid(k: str, v: str) -> bool:
 def day7_1():
     rules = read_rules()
     bag_color = "shiny gold"
-    bags = can_contain(bag_color, rules)
+    bags = can_be_contained_by(bag_color, rules)
     return len(bags)
 
 
-def can_contain(bag_color: str, rules: Dict) -> Set:
+def can_be_contained_by(bag_color: str, rules: Dict) -> Set:
     colors = {k for k, v in rules.items() if bag_color in v.keys()}
     if colors:
         for color in colors:
-            colors = colors.union(can_contain(bag_color=color, rules=rules))
+            colors = colors.union(can_be_contained_by(bag_color=color, rules=rules))
     return colors
 
 
@@ -196,7 +196,20 @@ def read_rules():
 
 
 def day7_2():
-    pass
+    rules = read_rules()
+    bag_color = "shiny gold"
+    bags = count_containing(bag_color=bag_color, rules=rules)
+    return bags
+
+
+def count_containing(bag_color: str, rules: Dict) -> int:
+    count = 0
+    bags_contained = rules.get(bag_color, None)
+    if bags_contained:
+        for color, c in bags_contained.items():
+            count += c
+            count += c * count_containing(bag_color=color, rules=rules)
+    return count
 
 
 if __name__ == '__main__':
