@@ -1,5 +1,5 @@
 import re
-from typing import List, Dict, Set
+from typing import List, Dict, Set, Tuple
 
 
 def day1_1():
@@ -161,6 +161,43 @@ def is_passport_field_valid(k: str, v: str) -> bool:
         return True
 
 
+def day5_1():
+    return max([get_seat_id(s) for s in get_seats()])
+
+
+def get_seats():
+    with open("input_5.txt", "r") as f:
+        seats = []
+        for line in f:
+            row = line[0:7]
+            row = row.replace("F", "0")
+            row = row.replace("B", "1")
+            column = line[7:]
+            column = column.replace("L", "0")
+            column = column.replace("R", "1")
+            seats.append((int(row, 2), int(column, 2)))
+    return seats
+
+
+def get_seat_id(seat: Tuple[int, int]) -> int:
+    row, column = seat
+    return row * 8 + column
+
+
+def day5_2():
+    seat_ids = [get_seat_id(s) for s in get_seats()]
+    free_seats = [s for s in range(max(seat_ids)) if s not in seat_ids]
+    return [s for s in free_seats if s + 1 in seat_ids and s - 1 in seat_ids]
+
+
+def day6_1():
+    pass
+
+
+def day6_2():
+    pass
+
+
 def day7_1():
     rules = read_rules()
     bag_color = "shiny gold"
@@ -221,6 +258,9 @@ if __name__ == '__main__':
     print(day3_2())
     print(day4_1())
     print(day4_2())
-
+    print(day5_1())
+    print(day5_2())
+    print(day6_1())
+    print(day6_2())
     print(day7_1())
     print(day7_2())
