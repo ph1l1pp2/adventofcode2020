@@ -191,11 +191,45 @@ def day5_2():
 
 
 def day6_1():
-    pass
+    groups_answers_yes = []
+    for group in get_groups():
+        answer_yes = set()
+        for person in group:
+            for answer in person:
+                answer_yes.add(answer)
+        groups_answers_yes.append(answer_yes)
+    return sum([len(a) for a in groups_answers_yes])
+
+
+def get_groups():
+    groups = []
+    group = []
+    with open("input_6.txt", "r") as f:
+        for line in f:
+            line = line.strip()
+            if line != "":
+                group.append(line)
+            else:
+                groups.append(group)
+                group = []
+        groups.append(group)
+    return groups
 
 
 def day6_2():
-    pass
+    groups_answers_yes = []
+    for group in get_groups():
+        group_answer_yes = set()
+        for i, person in enumerate(group):
+            person_answer_yes = set()
+            for answer in person:
+                person_answer_yes.add(answer)
+            if i == 0:
+                group_answer_yes = person_answer_yes
+            else:
+                group_answer_yes = group_answer_yes.intersection(person_answer_yes)
+        groups_answers_yes.append(group_answer_yes)
+    return sum([len(a) for a in groups_answers_yes])
 
 
 def day7_1():
