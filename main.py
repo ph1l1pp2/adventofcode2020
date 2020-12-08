@@ -283,6 +283,52 @@ def count_containing(bag_color: str, rules: Dict) -> int:
     return count
 
 
+def day8_1():
+    boot_code = get_boot_code()
+    accumulator, boot_error = execute_boot_code(boot_code=boot_code)
+    return accumulator
+
+
+def day8_2():
+    boot_code = get_boot_code()
+    swap_instruction = {"jmp":"nop", "nop":"jmp"}
+    for i, line in enumerate(boot_code):
+        operation, argument = line
+        if operation != "acc":
+            fixed_boot_code = boot_code.copy()
+            fixed_boot_code[i] = (swap_instruction[operation], argument)
+            accumulator, boot_error = execute_boot_code(boot_code=fixed_boot_code)
+            if not boot_error:
+                return accumulator
+
+
+def get_boot_code() -> List[Tuple[str, int]]:
+    boot_code = []
+    with open("input_8.txt", "r") as f:
+        for line in f:
+            operation, argument = line.split()
+            boot_code.append((operation, int(argument)))
+    return boot_code
+
+
+def execute_boot_code(boot_code: List[Tuple[str, int]]):
+    i = 0
+    accumulator = 0
+    already_run = []
+    while i < len(boot_code) and i not in already_run[:-1]:
+        operation, argument = boot_code[i]
+        if operation == "acc":
+            accumulator += argument
+            i += 1
+        elif operation == "jmp":
+            i += argument
+        elif operation == "nop":
+            i += 1
+        already_run.append(i)
+    error = True if i < len(boot_code) else False
+    return accumulator, error
+
+
 if __name__ == '__main__':
     print(day1_1())
     print(day1_2())
@@ -298,3 +344,5 @@ if __name__ == '__main__':
     print(day6_2())
     print(day7_1())
     print(day7_2())
+    print(day8_1())
+    print(day8_2())
