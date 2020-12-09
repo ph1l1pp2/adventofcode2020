@@ -291,7 +291,7 @@ def day8_1():
 
 def day8_2():
     boot_code = get_boot_code()
-    swap_instruction = {"jmp":"nop", "nop":"jmp"}
+    swap_instruction = {"jmp": "nop", "nop": "jmp"}
     for i, line in enumerate(boot_code):
         operation, argument = line
         if operation != "acc":
@@ -329,6 +329,31 @@ def execute_boot_code(boot_code: List[Tuple[str, int]]):
     return accumulator, error
 
 
+def day9_1():
+    with open("input_9.txt", "r") as f:
+        data = [int(line.strip()) for line in f.readlines()]
+    preamble = 25
+    while data[preamble] in get_sums(data[:preamble]):
+        data.pop(0)
+    return data[preamble]
+
+
+def get_sums(values: List[int]) -> List[int]:
+    return [x + y for y in values for x in values if x != y]
+
+
+def day9_2():
+    with open("input_9.txt", "r") as f:
+        data = [int(line.strip()) for line in f.readlines()]
+    weakness = day9_1()
+    for i in range(len(data)):
+        for j in range(2, len(data)):
+            if sum(data[i:j]) == weakness:
+                return min(data[i:j]) + max(data[i:j])
+            elif sum(data[i:j]) > weakness:
+                continue
+
+
 if __name__ == '__main__':
     print(day1_1())
     print(day1_2())
@@ -346,3 +371,5 @@ if __name__ == '__main__':
     print(day7_2())
     print(day8_1())
     print(day8_2())
+    print(day9_1())
+    print(day9_2())
