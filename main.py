@@ -354,6 +354,19 @@ def day9_2():
                 continue
 
 
+def day10_1():
+    with open("input_10.txt", "r") as f:
+        data = [int(line.strip()) for line in f.readlines()]
+    builtin_adapter_voltage = max(data) + 3
+    data.append(0)
+    data.append(builtin_adapter_voltage)
+    data.sort()
+    voltage_differences = [j-i for i, j in zip(data[:-1], data[1:])]
+    voltage_differences_count = [voltage_differences.count(i+1) for i in range(3)]
+    return voltage_differences_count[0]*voltage_differences_count[2]
+
+
+
 if __name__ == '__main__':
     print(day1_1())
     print(day1_2())
@@ -372,4 +385,5 @@ if __name__ == '__main__':
     print(day8_1())
     print(day8_2())
     print(day9_1())
-    print(day9_2())
+    # print(day9_2())
+    print(day10_1())
