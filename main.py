@@ -1,3 +1,4 @@
+import copy
 import re
 from typing import List, Dict, Set, Tuple
 
@@ -366,6 +367,36 @@ def day10_1():
     return voltage_differences_count[0]*voltage_differences_count[2]
 
 
+def day11_1():
+    with open("input_11.txt", "r") as f:
+        ferry_seats = [[seat for seat in line.strip()] for line in f.readlines()]
+    new_ferry_seats = apply_seating_rules(seats=ferry_seats)
+    while ferry_seats != new_ferry_seats:
+        ferry_seats = new_ferry_seats
+        new_ferry_seats = apply_seating_rules(seats=ferry_seats)
+    return sum([len([seat for seat in row if seat == "#"]) for row in new_ferry_seats])
+
+
+def apply_seating_rules(seats: List[str]) -> List[str]:
+    new_seats = copy.deepcopy(seats)
+    for seat_row, row in enumerate(seats):
+        for seat_column, column in enumerate(row):
+            adjacent_seats = count_adjacent_seats(row=seat_row, column=seat_column, seats=seats)
+            if column == "L" and adjacent_seats["#"] == 0:
+                new_seats[seat_row][seat_column] = "#"
+            elif column == "#" and adjacent_seats["#"] >= 4:
+                new_seats[seat_row][seat_column] = "L"
+    return new_seats
+
+
+def count_adjacent_seats(row: int, column: int, seats: List[str]) -> Dict[str, int]:
+    adjacent_seats = {"#": 0, "L": 0, ".": 0}
+    for check_row in range((row-1 if row > 0 else row), (row+1 if row+1<len(seats) else row)+1):
+        for check_columns in range((column-1 if column > 0 else column), (column+1 if column+1 < len(seats[0]) else column)+1):
+            if check_row != row or check_columns != column:
+                adjacent_seats[seats[check_row][check_columns]] += 1
+    return adjacent_seats
+
 
 if __name__ == '__main__':
     print(day1_1())
@@ -387,3 +418,5 @@ if __name__ == '__main__':
     print(day9_1())
     # print(day9_2())
     print(day10_1())
+
+    print(day11_1())
