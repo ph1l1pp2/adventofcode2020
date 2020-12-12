@@ -411,20 +411,19 @@ def day12_1():
 class Ship:
     directions = {"N": 0, "E": 90, "S": 180, "W": 270}
 
-    def __init__(self, start_pos=(0, 0), start_heading=90):
+    def __init__(self, start_pos=(0, 0), start_heading=90, start_waypoint=(0, 0)):
         self.pos_x, self.pos_y = start_pos
+        self.waypoint_x, self.waypoint_y = start_waypoint
         self.heading = start_heading
 
     def perform_instruction(self, instruction):
         action, value = instruction
-        print(f"before instruction: {self.pos_x},{self.pos_y}, heading={self.heading}")
         if action in self.directions.keys():
             self.move(direction=self.directions[action], value=value)
         elif action == "F":
             self.move(direction=self.heading, value=value)
         elif action in ["L", "R"]:
             self.turn(degree=value, action=action)
-        print(f"after instruction: {self.pos_x},{self.pos_y}, heading={self.heading}")
 
     def move(self, direction: int, value: int):
         if direction == 0:
@@ -441,6 +440,47 @@ class Ship:
             self.heading = (self.heading + degree) % 360
         elif action == "L":
             self.heading = (self.heading - degree) % 360
+
+    def perform_waypoint_instruction(self, instruction):
+        action, value = instruction
+        if action in self.directions.keys():
+            self.move_waypoint(direction=self.directions[action], value=value)
+        elif action == "F":
+            self.move_waypoint_direction(value=value)
+        elif action in ["L", "R"]:
+            self.rotate_waypoint(degree=value, action=action)
+
+    def move_waypoint(self, direction: int, value: int):
+        if direction == 0:
+            self.waypoint_y += value
+        elif direction == 90:
+            self.waypoint_x += value
+        elif direction == 180:
+            self.waypoint_y -= value
+        elif direction == 270:
+            self.waypoint_x -= value
+
+    def move_waypoint_direction(self, value: int):
+        self.pos_x += value * self.waypoint_x
+        self.pos_y += value * self.waypoint_y
+
+    def rotate_waypoint(self, degree: int, action: str):
+        if degree == 180:
+            self.waypoint_x *= (-1)
+            self.waypoint_y *= (-1)
+        elif (degree == 90 and action == "L") or (degree == 270 and action == "R"):
+            self.waypoint_x, self.waypoint_y = self.waypoint_y * (-1), self.waypoint_x
+        elif (degree == 90 and action == "R") or (degree == 270 and action == "L"):
+            self.waypoint_x, self.waypoint_y = self.waypoint_y, self.waypoint_x * (-1)
+
+
+def day12_2():
+    with open("input_12.txt", "r") as f:
+        waypoint_instructions = [(line[0], int(line[1:].strip())) for line in f.readlines()]
+    ship = Ship(start_waypoint=(10, 1))
+    for waypoint_instruction in waypoint_instructions:
+        ship.perform_waypoint_instruction(instruction=waypoint_instruction)
+    return abs(ship.pos_x) + abs(ship.pos_y)
 
 
 if __name__ == '__main__':
@@ -467,3 +507,4 @@ if __name__ == '__main__':
     # print(day11_1())
 
     print(day12_1())
+    print(day12_2())
