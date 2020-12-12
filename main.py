@@ -362,9 +362,9 @@ def day10_1():
     data.append(0)
     data.append(builtin_adapter_voltage)
     data.sort()
-    voltage_differences = [j-i for i, j in zip(data[:-1], data[1:])]
-    voltage_differences_count = [voltage_differences.count(i+1) for i in range(3)]
-    return voltage_differences_count[0]*voltage_differences_count[2]
+    voltage_differences = [j - i for i, j in zip(data[:-1], data[1:])]
+    voltage_differences_count = [voltage_differences.count(i + 1) for i in range(3)]
+    return voltage_differences_count[0] * voltage_differences_count[2]
 
 
 def day11_1():
@@ -391,11 +391,56 @@ def apply_seating_rules(seats: List[str]) -> List[str]:
 
 def count_adjacent_seats(row: int, column: int, seats: List[str]) -> Dict[str, int]:
     adjacent_seats = {"#": 0, "L": 0, ".": 0}
-    for check_row in range((row-1 if row > 0 else row), (row+1 if row+1<len(seats) else row)+1):
-        for check_columns in range((column-1 if column > 0 else column), (column+1 if column+1 < len(seats[0]) else column)+1):
+    for check_row in range((row - 1 if row > 0 else row), (row + 1 if row + 1 < len(seats) else row) + 1):
+        for check_columns in range((column - 1 if column > 0 else column),
+                                   (column + 1 if column + 1 < len(seats[0]) else column) + 1):
             if check_row != row or check_columns != column:
                 adjacent_seats[seats[check_row][check_columns]] += 1
     return adjacent_seats
+
+
+def day12_1():
+    with open("input_12.txt", "r") as f:
+        instructions = [(line[0], int(line[1:].strip())) for line in f.readlines()]
+    ship = Ship()
+    for instruction in instructions:
+        ship.perform_instruction(instruction=instruction)
+    return abs(ship.pos_x) + abs(ship.pos_y)
+
+
+class Ship:
+    directions = {"N": 0, "E": 90, "S": 180, "W": 270}
+
+    def __init__(self, start_pos=(0, 0), start_heading=90):
+        self.pos_x, self.pos_y = start_pos
+        self.heading = start_heading
+
+    def perform_instruction(self, instruction):
+        action, value = instruction
+        print(f"before instruction: {self.pos_x},{self.pos_y}, heading={self.heading}")
+        if action in self.directions.keys():
+            self.move(direction=self.directions[action], value=value)
+        elif action == "F":
+            self.move(direction=self.heading, value=value)
+        elif action in ["L", "R"]:
+            self.turn(degree=value, action=action)
+        print(f"after instruction: {self.pos_x},{self.pos_y}, heading={self.heading}")
+
+    def move(self, direction: int, value: int):
+        if direction == 0:
+            self.pos_y += value
+        elif direction == 90:
+            self.pos_x += value
+        elif direction == 180:
+            self.pos_y -= value
+        elif direction == 270:
+            self.pos_x -= value
+
+    def turn(self, degree: int, action: str):
+        if action == "R":
+            self.heading = (self.heading + degree) % 360
+        elif action == "L":
+            self.heading = (self.heading - degree) % 360
 
 
 if __name__ == '__main__':
@@ -417,6 +462,8 @@ if __name__ == '__main__':
     print(day8_2())
     print(day9_1())
     # print(day9_2())
-    print(day10_1())
+    # print(day10_1())
 
-    print(day11_1())
+    # print(day11_1())
+
+    print(day12_1())
