@@ -489,14 +489,34 @@ def day13_1():
                 ",x,x,x,797,x,x,x,x,x,x,x,x,x,41,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,29".split(",")
     bus_lines = [int(i) for i in bus_lines if i != "x"]
     wait_time, bus = get_next_bus(earliest_time=earliest_time, bus_lines=bus_lines)
-    return wait_time*bus[0]
+    return wait_time * bus[0]
 
 
 def get_next_bus(earliest_time: int, bus_lines: List[int]) -> Tuple[int, List[int]]:
     for wait_time in range(min(bus_lines)):
-        bus = [bus_line for bus_line in bus_lines if (earliest_time+wait_time) % bus_line == 0]
+        bus = [bus_line for bus_line in bus_lines if (earliest_time + wait_time) % bus_line == 0]
         if bus:
             return wait_time, bus
+
+
+def day13_2():
+    # should be optimized by using some math tricks
+    bus_lines = "19,x,x,x,x,x,x,x,x,x,x,x,x,37,x,x,x,x,x,883,x,x,x,x,x,x,x,23,x,x,x,x,13,x,x,x,17,x,x,x,x,x,x,x,x,x,x" \
+                ",x,x,x,797,x,x,x,x,x,x,x,x,x,41,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,29".split(",")
+    bus_lines = [int(i) if i != "x" else None for i in bus_lines]
+    leave_time = 100000000000000
+
+    max_bus_line = max([i for i in bus_lines if i])
+    max_bus_line_diff_first = bus_lines.index(max_bus_line)
+    leave_time = leave_time - (leave_time % max_bus_line) - max_bus_line_diff_first
+    while True:
+        if check_buses(leave_time=leave_time, bus_lines=bus_lines):
+            return leave_time
+        leave_time += max_bus_line
+
+
+def check_buses(leave_time: int, bus_lines: List[int]):
+    return all([((leave_time + i) % bus) == 0 for i, bus in enumerate(bus_lines) if bus])
 
 
 if __name__ == '__main__':
@@ -525,3 +545,4 @@ if __name__ == '__main__':
     print(day12_1())
     print(day12_2())
     print(day13_1())
+    # print(day13_2())
