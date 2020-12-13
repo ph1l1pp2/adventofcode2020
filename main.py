@@ -377,7 +377,7 @@ def day11_1():
     return sum([len([seat for seat in row if seat == "#"]) for row in new_ferry_seats])
 
 
-def apply_seating_rules(seats: List[str]) -> List[str]:
+def apply_seating_rules(seats: List[List[str]]) -> List[List[str]]:
     new_seats = copy.deepcopy(seats)
     for seat_row, row in enumerate(seats):
         for seat_column, column in enumerate(row):
@@ -389,7 +389,7 @@ def apply_seating_rules(seats: List[str]) -> List[str]:
     return new_seats
 
 
-def count_adjacent_seats(row: int, column: int, seats: List[str]) -> Dict[str, int]:
+def count_adjacent_seats(row: int, column: int, seats: List[List[str]]) -> Dict[str, int]:
     adjacent_seats = {"#": 0, "L": 0, ".": 0}
     for check_row in range((row - 1 if row > 0 else row), (row + 1 if row + 1 < len(seats) else row) + 1):
         for check_columns in range((column - 1 if column > 0 else column),
@@ -483,6 +483,22 @@ def day12_2():
     return abs(ship.pos_x) + abs(ship.pos_y)
 
 
+def day13_1():
+    earliest_time = 1006605
+    bus_lines = "19,x,x,x,x,x,x,x,x,x,x,x,x,37,x,x,x,x,x,883,x,x,x,x,x,x,x,23,x,x,x,x,13,x,x,x,17,x,x,x,x,x,x,x,x,x,x" \
+                ",x,x,x,797,x,x,x,x,x,x,x,x,x,41,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,29".split(",")
+    bus_lines = [int(i) for i in bus_lines if i != "x"]
+    wait_time, bus = get_next_bus(earliest_time=earliest_time, bus_lines=bus_lines)
+    return wait_time*bus[0]
+
+
+def get_next_bus(earliest_time: int, bus_lines: List[int]) -> Tuple[int, List[int]]:
+    for wait_time in range(min(bus_lines)):
+        bus = [bus_line for bus_line in bus_lines if (earliest_time+wait_time) % bus_line == 0]
+        if bus:
+            return wait_time, bus
+
+
 if __name__ == '__main__':
     print(day1_1())
     print(day1_2())
@@ -508,3 +524,4 @@ if __name__ == '__main__':
 
     print(day12_1())
     print(day12_2())
+    print(day13_1())
