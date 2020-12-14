@@ -519,6 +519,35 @@ def check_buses(leave_time: int, bus_lines: List[int]):
     return all([((leave_time + i) % bus) == 0 for i, bus in enumerate(bus_lines) if bus])
 
 
+def day14_1():
+    instructions = []
+    with open("input_14.txt", "r") as f:
+        for line in f:
+            instruction, value = line.split("=")
+            instructions.append((instruction.strip(), value.strip()))
+    mask = ""
+    memory = {}
+    for instruction, value in instructions:
+
+        if instruction == "mask":
+            mask = value
+            print(mask)
+        else:
+            address = instruction[instruction.find("[")+1:instruction.find("]")]
+            value_str = bin(int(value))[2:].zfill(36)
+            memory[address] = "".join([x for x in map(apply_bit_mask, mask, value_str)])
+    return sum([int(m, 2) for m in memory.values()])
+
+
+def apply_bit_mask(mask_bit, value_bit):
+    if mask_bit == "X":
+        return value_bit
+    else:
+        return mask_bit
+
+
+
+
 if __name__ == '__main__':
     print(day1_1())
     print(day1_2())
@@ -546,3 +575,4 @@ if __name__ == '__main__':
     print(day12_2())
     print(day13_1())
     # print(day13_2())
+    print(day14_1())
