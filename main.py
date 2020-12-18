@@ -2,6 +2,8 @@ import copy
 import re
 from typing import List, Dict, Set, Tuple
 
+import pyparsing
+
 
 def day1_1():
     expenses = []
@@ -381,7 +383,8 @@ def apply_seating_rules(seats: List[List[str]]) -> List[List[str]]:
     new_seats = copy.deepcopy(seats)
     for seat_row, row in enumerate(seats):
         for seat_column, column in enumerate(row):
-            adjacent_seats = count_adjacent_seats(row=seat_row, column=seat_column, seats=seats)
+            adjacent_seats = count_adjacent_seats(row=seat_row, column=seat_column,
+                                                  seats=seats)
             if column == "L" and adjacent_seats["#"] == 0:
                 new_seats[seat_row][seat_column] = "#"
             elif column == "#" and adjacent_seats["#"] >= 4:
@@ -389,11 +392,14 @@ def apply_seating_rules(seats: List[List[str]]) -> List[List[str]]:
     return new_seats
 
 
-def count_adjacent_seats(row: int, column: int, seats: List[List[str]]) -> Dict[str, int]:
+def count_adjacent_seats(row: int, column: int, seats: List[List[str]]) -> Dict[
+    str, int]:
     adjacent_seats = {"#": 0, "L": 0, ".": 0}
-    for check_row in range((row - 1 if row > 0 else row), (row + 1 if row + 1 < len(seats) else row) + 1):
+    for check_row in range((row - 1 if row > 0 else row),
+                           (row + 1 if row + 1 < len(seats) else row) + 1):
         for check_columns in range((column - 1 if column > 0 else column),
-                                   (column + 1 if column + 1 < len(seats[0]) else column) + 1):
+                                   (column + 1 if column + 1 < len(
+                                       seats[0]) else column) + 1):
             if check_row != row or check_columns != column:
                 adjacent_seats[seats[check_row][check_columns]] += 1
     return adjacent_seats
@@ -476,7 +482,8 @@ class Ship:
 
 def day12_2():
     with open("input_12.txt", "r") as f:
-        waypoint_instructions = [(line[0], int(line[1:].strip())) for line in f.readlines()]
+        waypoint_instructions = [(line[0], int(line[1:].strip())) for line in
+                                 f.readlines()]
     ship = Ship(start_waypoint=(10, 1))
     for waypoint_instruction in waypoint_instructions:
         ship.perform_waypoint_instruction(instruction=waypoint_instruction)
@@ -486,7 +493,8 @@ def day12_2():
 def day13_1():
     earliest_time = 1006605
     bus_lines = "19,x,x,x,x,x,x,x,x,x,x,x,x,37,x,x,x,x,x,883,x,x,x,x,x,x,x,23,x,x,x,x,13,x,x,x,17,x,x,x,x,x,x,x,x,x,x" \
-                ",x,x,x,797,x,x,x,x,x,x,x,x,x,41,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,29".split(",")
+                ",x,x,x,797,x,x,x,x,x,x,x,x,x,41,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,29".split(
+        ",")
     bus_lines = [int(i) for i in bus_lines if i != "x"]
     wait_time, bus = get_next_bus(earliest_time=earliest_time, bus_lines=bus_lines)
     return wait_time * bus[0]
@@ -494,7 +502,8 @@ def day13_1():
 
 def get_next_bus(earliest_time: int, bus_lines: List[int]) -> Tuple[int, List[int]]:
     for wait_time in range(min(bus_lines)):
-        bus = [bus_line for bus_line in bus_lines if (earliest_time + wait_time) % bus_line == 0]
+        bus = [bus_line for bus_line in bus_lines if
+               (earliest_time + wait_time) % bus_line == 0]
         if bus:
             return wait_time, bus
 
@@ -502,7 +511,8 @@ def get_next_bus(earliest_time: int, bus_lines: List[int]) -> Tuple[int, List[in
 def day13_2():
     # should be optimized by using some math tricks
     bus_lines = "19,x,x,x,x,x,x,x,x,x,x,x,x,37,x,x,x,x,x,883,x,x,x,x,x,x,x,23,x,x,x,x,13,x,x,x,17,x,x,x,x,x,x,x,x,x,x" \
-                ",x,x,x,797,x,x,x,x,x,x,x,x,x,41,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,29".split(",")
+                ",x,x,x,797,x,x,x,x,x,x,x,x,x,41,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,29".split(
+        ",")
     bus_lines = [int(i) if i != "x" else None for i in bus_lines]
     leave_time = 100000000000000
 
@@ -516,7 +526,8 @@ def day13_2():
 
 
 def check_buses(leave_time: int, bus_lines: List[int]):
-    return all([((leave_time + i) % bus) == 0 for i, bus in enumerate(bus_lines) if bus])
+    return all(
+        [((leave_time + i) % bus) == 0 for i, bus in enumerate(bus_lines) if bus])
 
 
 def day14_1():
@@ -533,7 +544,7 @@ def day14_1():
             mask = value
             print(mask)
         else:
-            address = instruction[instruction.find("[")+1:instruction.find("]")]
+            address = instruction[instruction.find("[") + 1:instruction.find("]")]
             value_str = bin(int(value))[2:].zfill(36)
             memory[address] = "".join([x for x in map(apply_bit_mask, mask, value_str)])
     return sum([int(m, 2) for m in memory.values()])
@@ -546,6 +557,36 @@ def apply_bit_mask(mask_bit, value_bit):
         return mask_bit
 
 
+def day18_1():
+    results = []
+    content = pyparsing.Word(pyparsing.alphanums) | '+' | '*'
+    parentheses = pyparsing.nestedExpr(content=content)
+    with open("input_18.txt", "r") as f:
+        for line in f:
+            expression = f"({line.strip()})"
+            expression_list = parentheses.parseString(expression)
+            results.append(evaluate_expression(expression_list.asList()))
+    return sum(results)
+
+
+def evaluate_expression(expression: list) -> str:
+    result = 0
+    operator = "+"
+    for e in expression:
+        if isinstance(e, list):
+            result = calc(result, evaluate_expression(e),operator)
+        elif e.isnumeric():
+            result = calc(result, int(e), operator)
+        elif e in ["+", "*"]:
+            operator = e
+    return result
+
+
+def calc(v1: int, v2: int, operator: str):
+    if operator == "+":
+        return v1 + v2
+    elif operator == "*":
+        return v1 * v2
 
 
 if __name__ == '__main__':
@@ -576,3 +617,5 @@ if __name__ == '__main__':
     print(day13_1())
     # print(day13_2())
     print(day14_1())
+
+    print(day18_1())
